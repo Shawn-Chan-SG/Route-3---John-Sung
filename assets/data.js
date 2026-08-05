@@ -11,7 +11,8 @@ const CP_DATA = {
     pattern: 6,
     answer: "career",
     map: "assets/images/cp1-map.jpg",
-    board: "assets/images/cp1-board.jpg"
+    board: "assets/images/cp1-board.jpg",
+    plusCode: "8R78+X5F"
   },
   2: {
     name: "Evolution Garden",
@@ -20,7 +21,8 @@ const CP_DATA = {
     pattern: 7,
     answer: "success",
     map: "assets/images/cp2-map.jpg",
-    board: "assets/images/cp2-board.jpg"
+    board: "assets/images/cp2-board.jpg",
+    plusCode: "8R88+P65"
   },
   3: {
     name: "Bamboo Collection",
@@ -29,7 +31,8 @@ const CP_DATA = {
     pattern: 3,
     answer: "sin",
     map: "assets/images/cp3-map.jpg",
-    board: "assets/images/cp3-board.jpg"
+    board: "assets/images/cp3-board.jpg",
+    plusCode: "8RC7+5WX"
   },
   4: {
     name: "Ethnobotany Garden",
@@ -38,7 +41,8 @@ const CP_DATA = {
     pattern: 5,
     answer: "often",
     map: "assets/images/cp4-map.jpg",
-    board: "assets/images/cp4-board.jpg"
+    board: "assets/images/cp4-board.jpg",
+    plusCode: "8R98+W9P"
   },
   5: {
     name: "Centre of Ethnobotany",
@@ -48,7 +52,8 @@ const CP_DATA = {
     answer: "everyday",
     map: "assets/images/cp5-map.jpg",
     board: "assets/images/cp5-board.jpg",
-    hint: "assets/images/cp5-hint.jpg"
+    hint: "assets/images/cp5-hint.jpg",
+    plusCode: "8R98+QJ"
   },
   6: {
     name: "Seed Bank",
@@ -57,7 +62,8 @@ const CP_DATA = {
     pattern: 4,
     answer: "life",
     map: "assets/images/cp6-map.jpg",
-    board: "assets/images/cp6-board.jpg"
+    board: "assets/images/cp6-board.jpg",
+    plusCode: "8R98+4FX"
   },
   7: {
     name: "Fragrant Garden",
@@ -66,7 +72,8 @@ const CP_DATA = {
     pattern: 8,
     answer: "miracles",
     map: "assets/images/cp7-map.jpg",
-    board: "assets/images/cp7-board.jpg"
+    board: "assets/images/cp7-board.jpg",
+    plusCode: "8R88+XH4"
   },
   8: {
     name: "The Former Economic Garden",
@@ -75,7 +82,8 @@ const CP_DATA = {
     pattern: [9, 4],
     answer: "southeast asia",
     map: "assets/images/cp8-map.jpg",
-    board: "assets/images/cp8-board.jpg"
+    board: "assets/images/cp8-board.jpg",
+    plusCode: "8R88+CPR"
   }
 };
 

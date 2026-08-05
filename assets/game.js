@@ -176,6 +176,10 @@
 
     let hintImg = cp.hint ? `<img class="photo" src="${cp.hint}" alt="Hint" /><div class="photo-caption">Look for this &mdash; a good sign you're close.</div>` : "";
 
+    let plusCodeRow = cp.plusCode
+      ? `<div class="plus-code-row"><span class="plus-code-label">Google Maps code:</span> <a class="plus-code-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cp.plusCode + " Singapore")}" target="_blank" rel="noopener">${cp.plusCode}</a></div>`
+      : "";
+
     let lastStationNote = "";
     if (i === seq.length - 1 && !solvedAll && st !== "pending") {
       lastStationNote = `<p class="status-msg info">This is the last stop on your route, but ${seq.length - solvedCount()} checkpoint(s) still need answers. Use the dots above or the Back button to go complete them.</p>`;
@@ -191,6 +195,7 @@
           <h2>Checkpoint ${i + 1} of ${seq.length}: ${cp.name}</h2>
           <img class="photo" src="${cp.map}" alt="Map to ${cp.name}" />
           <div class="photo-caption">Route map &mdash; your checkpoint is marked in red.</div>
+          ${plusCodeRow}
           <h3>Where to find it</h3>
           <p>${cp.where}</p>
           ${hintImg}
@@ -247,10 +252,19 @@
     }
     if (val === normalize(cp.answer)) {
       state.status[i] = "solved";
-      msg.textContent = "Correct!";
-      msg.className = "status-msg ok";
       input.classList.add("correct");
-      advanceAfterAction(i);
+      if (allSolved()) {
+        // That was the last checkpoint — auto-advance straight to the Final Challenge.
+        msg.textContent = "Correct! All 8 checkpoints complete — loading the Final Challenge…";
+        msg.className = "status-msg ok";
+        state.screen = "final";
+        saveState(state);
+        setTimeout(render, 900);
+      } else {
+        msg.textContent = "Correct!";
+        msg.className = "status-msg ok";
+        advanceAfterAction(i);
+      }
     } else {
       msg.textContent = "Not quite &mdash; check the board again, or tap Skip to come back later.";
       msg.className = "status-msg error";
