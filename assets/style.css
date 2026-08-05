@@ -185,9 +185,6 @@ body {
   color: #4a5a4e;
   margin: 8px 0 4px;
 }
-.plus-code-label {
-  font-weight: 600;
-}
 .plus-code-link {
   color: var(--leaf);
   font-weight: 700;

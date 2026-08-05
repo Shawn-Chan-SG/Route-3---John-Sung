@@ -177,7 +177,7 @@
     let hintImg = cp.hint ? `<img class="photo" src="${cp.hint}" alt="Hint" /><div class="photo-caption">Look for this &mdash; a good sign you're close.</div>` : "";
 
     let plusCodeRow = cp.plusCode
-      ? `<div class="plus-code-row"><span class="plus-code-label">Google Maps code:</span> <a class="plus-code-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cp.plusCode + " Singapore")}" target="_blank" rel="noopener">${cp.plusCode}</a></div>`
+      ? `<div class="plus-code-row"><a class="plus-code-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cp.plusCode + " Singapore")}" target="_blank" rel="noopener">${cp.plusCode}</a></div>`
       : "";
 
     let lastStationNote = "";
