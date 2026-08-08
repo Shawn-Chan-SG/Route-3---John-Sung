@@ -7,7 +7,7 @@
   const teamId = document.body.getAttribute("data-team");
   const team = TEAMS[teamId];
   if (!team) {
-    document.getElementById("app").innerHTML = "<p style='color:#fff'>Unknown team.</p>";
+    document.getElementById("app").innerHTML = "<p style='color:#fff'>" + t("unknownTeam") + "</p>";
     return;
   }
   const STORAGE_KEY = "route3_johnsung_" + teamId;
@@ -64,6 +64,10 @@
     return Array(pattern).fill("_").join(" ");
   }
 
+  function updateDocTitle() {
+    document.title = t("pageTitleTeam", { teamId: teamId });
+  }
+
   function renderProgressDots(highlightCurrent) {
     let html = '<div class="progress-row">';
     seq.forEach((cpNum, i) => {
@@ -74,30 +78,34 @@
       else if (st === "skipped") cls += " skipped";
       if (visited) cls += " visited";
       if (highlightCurrent && i === state.current) cls += " current";
-      html += `<button type="button" class="${cls}" data-dot="${i}" ${visited ? "" : "disabled"} title="Checkpoint ${i + 1}">${i + 1}</button>`;
+      html += `<button type="button" class="${cls}" data-dot="${i}" ${visited ? "" : "disabled"} title="${t("checkpointDotTitle", { n: i + 1 })}">${i + 1}</button>`;
     });
     html += "</div>";
-    html += `<div class="progress-caption">${solvedCount()} of ${seq.length} checkpoints solved</div>`;
+    html += `<div class="progress-caption">${t("progressCaption", { solved: solvedCount(), total: seq.length })}</div>`;
     return html;
   }
 
   function header() {
+    updateDocTitle();
     return `
       <div class="site-header">
         <img class="site-logo" src="assets/images/mm-logo.png" alt="Mission logo" />
         <span class="emoji">🌿</span>
-        <h1>Great Commission Quest</h1>
-        <p>Route 3: John Sung &middot; The China Challenge</p>
-        <p>Singapore Botanic Gardens &middot; Mission Trip Fundraiser 2026</p>
-        <span class="tag">${team.label}</span>
+        <h1>${t("siteTitle")}</h1>
+        <p>${t("routeLine")}</p>
+        <p>${t("eventLine")}</p>
+        <span class="tag">${teamLabel(team)}</span>
       </div>`;
   }
 
   function topActions(showReset) {
     return `
       <div class="top-actions">
-        <a class="back-link" href="index.html">&larr; Race Home</a>
-        ${showReset ? '<button type="button" class="reset-link" id="resetLink">Reset game</button>' : ""}
+        <a class="back-link" href="index.html">${t("raceHome")}</a>
+        <div class="top-actions-right">
+          ${showReset ? `<button type="button" class="reset-link" id="resetLink">${t("resetGame")}</button>` : ""}
+          <button type="button" class="lang-toggle" id="langToggle">${t("langToggle")}</button>
+        </div>
       </div>`;
   }
 
@@ -108,15 +116,16 @@
       <div class="wrap">
         ${topActions(false)}
         <div class="card">
-          <h2>Welcome, ${team.label}!</h2>
-          <p>You are about to race through the Singapore Botanic Gardens, following clues left by missionary <strong>John Sung</strong>.</p>
-          <p>At each checkpoint, find the interpretive board, solve the clue, and key in the keyword. Can't find it? You may skip ahead &mdash; but you'll need to come back and finish every checkpoint before the final challenge unlocks.</p>
-          <p>Collect all 8 keywords to unlock the final passage challenge and complete the Quest.</p>
-          <button type="button" class="btn btn-primary btn-full" id="beginBtn">Begin the Race &rarr;</button>
+          <h2>${t("welcome", { team: teamLabel(team) })}</h2>
+          <p>${t("introP1")}</p>
+          <p>${t("introP2")}</p>
+          <p>${t("introP3")}</p>
+          <button type="button" class="btn btn-primary btn-full" id="beginBtn">${t("beginRace")}</button>
         </div>
       </div>
-      <div class="site-footer">Route 3 &middot; John Sung &middot; ${team.label}</div>
+      <div class="site-footer">${t("footerTeam", { team: teamLabel(team) })}</div>
     `;
+    wireCommon();
     document.getElementById("beginBtn").addEventListener("click", () => {
       state.started = true;
       state.screen = "checkpoint";
@@ -140,41 +149,41 @@
     if (solvedAll) {
       banner = `
         <div class="card" style="background:linear-gradient(160deg,#fff6df,#fdeab8); border:2px solid var(--gold);">
-          <h2 style="margin-top:0;">🎉 All 8 checkpoints complete!</h2>
-          <p>You've gathered every keyword. Tap below to unlock the Final Challenge.</p>
-          <button type="button" class="btn btn-gold btn-full" id="toFinalBtn">Proceed to Final Challenge &rarr;</button>
+          <h2 style="margin-top:0;">${t("allCompleteTitle")}</h2>
+          <p>${t("allCompleteBody")}</p>
+          <button type="button" class="btn btn-gold btn-full" id="toFinalBtn">${t("proceedFinal")}</button>
         </div>`;
     }
 
     let actionArea = "";
     if (st === "solved") {
       actionArea = `
-        <div class="status-msg ok">&#10003; Solved &mdash; keyword: <strong>${cp.answer.toUpperCase()}</strong></div>
+        <div class="status-msg ok">${t("solvedKeyword", { answer: cp.answer.toUpperCase() })}</div>
         <div class="btn-row">
-          <button type="button" class="btn btn-secondary" id="backBtn" ${i === 0 ? "disabled" : ""}>&larr; Back</button>
-          <button type="button" class="btn btn-primary" id="nextBtn" ${i < state.frontier ? "" : "disabled"}>Next &rarr;</button>
+          <button type="button" class="btn btn-secondary" id="backBtn" ${i === 0 ? "disabled" : ""}>${t("back")}</button>
+          <button type="button" class="btn btn-primary" id="nextBtn" ${i < state.frontier ? "" : "disabled"}>${t("next")}</button>
         </div>`;
     } else {
       const skippedNote = st === "skipped"
-        ? `<div class="status-msg info">&#9203; You skipped this earlier. You can still solve it now:</div>`
+        ? `<div class="status-msg info">${t("skippedNote")}</div>`
         : "";
       actionArea = `
         ${skippedNote}
-        <label class="field-label">Enter the keyword</label>
+        <label class="field-label">${t("enterKeyword")}</label>
         <div class="pattern">${patternDisplay(cp.pattern)}</div>
-        <input type="text" id="answerInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type keyword here" />
+        <input type="text" id="answerInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${t("keywordPlaceholder")}" />
         <div class="status-msg" id="answerMsg"></div>
         <div class="btn-row">
-          <button type="button" class="btn btn-primary" id="submitBtn">Submit</button>
-          <button type="button" class="btn btn-secondary" id="skipBtn">Skip &raquo;</button>
+          <button type="button" class="btn btn-primary" id="submitBtn">${t("submit")}</button>
+          <button type="button" class="btn btn-secondary" id="skipBtn">${t("skip")}</button>
         </div>
         <div class="btn-row">
-          <button type="button" class="btn btn-secondary" id="backBtn" ${i === 0 ? "disabled" : ""}>&larr; Back</button>
-          ${isReview ? '<button type="button" class="btn btn-secondary" id="nextBtn">Next &rarr;</button>' : ""}
+          <button type="button" class="btn btn-secondary" id="backBtn" ${i === 0 ? "disabled" : ""}>${t("back")}</button>
+          ${isReview ? `<button type="button" class="btn btn-secondary" id="nextBtn">${t("next")}</button>` : ""}
         </div>`;
     }
 
-    let hintImg = cp.hint ? `<img class="photo" src="${cp.hint}" alt="Hint" /><div class="photo-caption">Look for this &mdash; a good sign you're close.</div>` : "";
+    let hintImg = cp.hint ? `<img class="photo" src="${cp.hint}" alt="Hint" /><div class="photo-caption">${t("hintCaption")}</div>` : "";
 
     let plusCodeRow = cp.plusCode
       ? `<div class="plus-code-row">${cp.plusCode}</div>`
@@ -182,8 +191,10 @@
 
     let lastStationNote = "";
     if (i === seq.length - 1 && !solvedAll && st !== "pending") {
-      lastStationNote = `<p class="status-msg info">This is the last stop on your route, but ${seq.length - solvedCount()} checkpoint(s) still need answers. Use the dots above or the Back button to go complete them.</p>`;
+      lastStationNote = `<p class="status-msg info">${t("lastStationNote", { n: seq.length - solvedCount() })}</p>`;
     }
+
+    const cpName = cpText(cp, "name");
 
     app.innerHTML = `
       ${header()}
@@ -192,22 +203,22 @@
         ${renderProgressDots(true)}
         ${banner}
         <div class="card">
-          <h2>Checkpoint ${i + 1} of ${seq.length}: ${cp.name}</h2>
-          <img class="photo" src="${cp.map}" alt="Map to ${cp.name}" />
-          <div class="photo-caption">Route map &mdash; your checkpoint is marked in red.</div>
+          <h2>${t("checkpointTitle", { i: i + 1, n: seq.length, name: cpName })}</h2>
+          <img class="photo" src="${cp.map}" alt="Map to ${cpName}" />
+          <div class="photo-caption">${t("mapCaption")}</div>
           ${plusCodeRow}
-          <h3>Where to find it</h3>
-          <p>${cp.where}</p>
+          <h3>${t("whereToFind")}</h3>
+          <p>${cpText(cp, "where")}</p>
           ${hintImg}
-          <h3>Confirm the board</h3>
-          <img class="photo" src="${cp.board}" alt="${cp.name} board" />
-          <h3>Clue</h3>
-          <p>${cp.riddle}</p>
+          <h3>${t("confirmBoard")}</h3>
+          <img class="photo" src="${cp.board}" alt="${cpName} board" />
+          <h3>${t("clue")}</h3>
+          <p>${cpText(cp, "riddle")}</p>
           ${actionArea}
           ${lastStationNote}
         </div>
       </div>
-      <div class="site-footer">Route 3 &middot; John Sung &middot; ${team.label}</div>
+      <div class="site-footer">${t("footerTeam", { team: teamLabel(team) })}</div>
     `;
 
     wireCommon();
@@ -246,7 +257,7 @@
     const msg = document.getElementById("answerMsg");
     const val = normalize(input.value);
     if (!val) {
-      msg.textContent = "Please type an answer, or tap Skip.";
+      msg.textContent = t("pleaseTypeAnswer");
       msg.className = "status-msg error";
       return;
     }
@@ -255,18 +266,18 @@
       input.classList.add("correct");
       if (allSolved()) {
         // That was the last checkpoint — auto-advance straight to the Final Challenge.
-        msg.textContent = "Correct! All 8 checkpoints complete — loading the Final Challenge…";
+        msg.textContent = t("correctAllDone");
         msg.className = "status-msg ok";
         state.screen = "final";
         saveState(state);
         setTimeout(render, 900);
       } else {
-        msg.textContent = "Correct!";
+        msg.textContent = t("correct");
         msg.className = "status-msg ok";
         advanceAfterAction(i);
       }
     } else {
-      msg.textContent = "Not quite &mdash; check the board again, or tap Skip to come back later.";
+      msg.textContent = t("notQuite");
       msg.className = "status-msg error";
       input.classList.add("error");
     }
@@ -317,21 +328,21 @@
       <div class="wrap">
         ${topActions(false)}
         <div class="card">
-          <h2>🏁 Final Challenge: The Master Passage</h2>
-          <p>Fill in every blank using the keywords you collected. Use the word bank below if you need help.</p>
+          <h2>${t("finalTitle")}</h2>
+          <p>${t("finalIntro")}</p>
           <div class="passage">${passageHtml}</div>
           <div class="status-msg" id="finalMsg"></div>
           <div class="word-bank">
-            <h3>Word bank</h3>
+            <h3>${t("wordBank")}</h3>
             <div class="chips">${bankWords.map((w) => `<span class="chip">${w}</span>`).join("")}</div>
           </div>
           <div class="btn-row" style="margin-top:16px;">
-            <button type="button" class="btn btn-secondary" id="backToChecksBtn">&larr; Back to checkpoints</button>
-            <button type="button" class="btn btn-primary" id="submitPassageBtn">Submit Passage</button>
+            <button type="button" class="btn btn-secondary" id="backToChecksBtn">${t("backToCheckpoints")}</button>
+            <button type="button" class="btn btn-primary" id="submitPassageBtn">${t("submitPassage")}</button>
           </div>
         </div>
       </div>
-      <div class="site-footer">Route 3 &middot; John Sung &middot; ${team.label}</div>
+      <div class="site-footer">${t("footerTeam", { team: teamLabel(team) })}</div>
     `;
 
     wireCommon();
@@ -366,13 +377,13 @@
     });
     const msg = document.getElementById("finalMsg");
     if (allCorrect) {
-      msg.textContent = "All correct! Completing the Quest...";
+      msg.textContent = t("allCorrectDone");
       msg.className = "status-msg ok";
       state.screen = "done";
       saveState(state);
       setTimeout(render, 600);
     } else {
-      msg.textContent = "Some answers aren't quite right yet &mdash; check the highlighted blanks and try again.";
+      msg.textContent = t("someWrong");
       msg.className = "status-msg error";
     }
   }
@@ -389,15 +400,15 @@
         ${topActions(false)}
         <div class="card congrats-card">
           <span class="congrats-emoji">🎉🌿🎉</span>
-          <h2>Congratulations, ${team.label}!</h2>
-          <p>You've completed the Route 3: John Sung trail and solved the Master Passage. Well done, Quest team!</p>
-          <p><strong>Please make your way back to the gathering point now.</strong></p>
+          <h2>${t("congratsTitle", { team: teamLabel(team) })}</h2>
+          <p>${t("congratsBody")}</p>
+          <p><strong>${t("congratsInstruction")}</strong></p>
         </div>
         <div class="gm-only-reset">
-          <button type="button" class="reset-link-discreet" id="resetBtn2">Reset game (facilitator only)</button>
+          <button type="button" class="reset-link-discreet" id="resetBtn2">${t("resetFacilitatorOnly")}</button>
         </div>
       </div>
-      <div class="site-footer">Route 3 &middot; John Sung &middot; ${team.label}</div>
+      <div class="site-footer">${t("footerTeam", { team: teamLabel(team) })}</div>
       ${resetModalHtml()}
     `;
     wireResetModal();
@@ -410,11 +421,11 @@
       <div class="modal-overlay" id="resetModal">
         <div class="modal-box">
           <span class="warn-icon">⚠️</span>
-          <h3>Reset the game?</h3>
-          <p>This will erase all progress for ${team.label} &mdash; every checkpoint answer and the final passage &mdash; and restart the race from the beginning. This cannot be undone.</p>
+          <h3>${t("resetConfirmTitle")}</h3>
+          <p>${t("resetConfirmBody", { team: teamLabel(team) })}</p>
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" id="cancelResetBtn">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmResetBtn">Yes, reset</button>
+            <button type="button" class="btn btn-secondary" id="cancelResetBtn">${t("cancel")}</button>
+            <button type="button" class="btn btn-danger" id="confirmResetBtn">${t("yesReset")}</button>
           </div>
         </div>
       </div>`;
@@ -443,6 +454,13 @@
         wireResetModal();
       }
       resetLink.addEventListener("click", openResetModal);
+    }
+    const langToggle = document.getElementById("langToggle");
+    if (langToggle) {
+      langToggle.addEventListener("click", () => {
+        setLang(getLang() === "zh" ? "en" : "zh");
+        render();
+      });
     }
     document.querySelectorAll("[data-dot]").forEach((btn) => {
       btn.addEventListener("click", () => {
